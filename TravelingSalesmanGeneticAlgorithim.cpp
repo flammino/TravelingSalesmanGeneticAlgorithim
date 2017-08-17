@@ -1,14 +1,12 @@
 // TravelingSalesmanGeneticAlgorithim.cpp 
-// Adam Flammino 6/28
+// Adam Flammino
 // Uses a genetic algorithm to solve the traveling salesman problem
 
 #include "stdafx.h"
 #include <stdlib.h>
-#include <math.h>
-#include <vector>
-#include <string>
 #include <iostream>
 #include <time.h>
+#include "../../../../../Program Files (x86)/Microsoft Visual Studio/2017/Enterprise/VC/Tools/MSVC/14.10.25017/include/vector"
 
 class City {
 private:
@@ -41,6 +39,21 @@ public:
 	}
 };
 
+struct CityList
+{
+private:
+	std::vector<City> cities; // Holds cities
+public:
+	// Adds city
+	void addCity(City city) {
+		cities.push_back(city);
+	}
+	// Gets city, takes city index as parameter
+	City getCity(int i)
+	{
+		return cities.at(i);
+	}
+};
 
 int main()
 {
