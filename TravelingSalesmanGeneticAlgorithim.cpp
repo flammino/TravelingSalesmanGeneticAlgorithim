@@ -1,14 +1,16 @@
 // TravelingSalesmanGeneticAlgorithim.cpp 
 // Adam Flammino
-// Uses a genetic algorithm to solve the traveling salesman problem
+// Uses a genetic algorithm to find a good solution to the traveling salesman problem
 
 #include "stdafx.h"
 #include <stdlib.h>
 #include <iostream>
 #include <time.h>
 #include <vector>
+#include <algorithm>
+#include <string>
 
-class City {
+struct City {
 private:
 	int x;
 	int y;
@@ -31,15 +33,10 @@ public:
 	int getY() {
 		return y;
 	}
-	// Distance between cities
-	double distance(City city1, City city2) {
-		int latDist = abs(city1.getX() - city2.getX());
-		int lonDist = abs(city1.getY() - city2.getY());
-		return sqrt((latDist * latDist) + (lonDist *lonDist)); // a^2 + b^2 = c^2
-	}
 };
 
-struct CityList
+// List of cities
+class CityList
 {
 private:
 	std::vector<City> cities; // Holds cities
@@ -54,7 +51,60 @@ public:
 		return cities.at(i);
 	}
 };
-
+// Holds each tour individual
+class Tour
+{
+private:
+	std::vector<City> tour;
+	double distance = 0;
+	double fitness = 0;
+	int size;
+public:
+	// Constructor, Generates a random tour
+	Tour(std::vector<City> cities) 
+	{
+		tour = cities; // Copies vector of cities
+		std::random_shuffle(tour.begin(), tour.end()); // Shuffles tour vector
+	}
+	// Gets city at i
+	City getCity(int i)
+	{
+		return tour.at(i);
+	}
+	// Sets city at position i
+	void setCity(int i, City c)
+	{
+		tour.at(i) = c;
+	}
+	// Gets distance between two cities
+	double distanceTwoCities(City city1, City city2) {
+		int latDist = abs(city1.getX() - city2.getX());
+		int lonDist = abs(city1.getY() - city2.getY());
+		return sqrt((latDist * latDist) + (lonDist *lonDist)); // a^2 + b^2 = c^2
+	}
+	// Gets distance traveled
+	double getDistance()
+	{
+		distance = 0;
+		size = tour.size();
+		for (int i = 0; i < size - 1; i++)
+		{
+			distance += distanceTwoCities(tour.at(i), tour.at(i + 1));
+		}
+		distance += distanceTwoCities(tour.at(0), tour.at(size - 1)); // Return to starting city
+		return distance;
+	}
+	// Gets fitness of tour individual
+	double getFitness()
+	{
+		return 1 / getDistance();
+	}
+	// Check if a city is on tour
+	bool onTour(City c)
+	{
+		return find(tour.begin(), tour.end(), c) != tour.end();
+	}
+};
 int main()
 {
 	const int numberOfCities = 50; // Sets number of cities
