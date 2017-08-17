@@ -44,22 +44,21 @@ public:
 
 int main()
 {
-	int numberOfCities;
-	srand(time(NULL)); // Needed so random cities are actually random
+	const int numberOfCities = 50; // Sets number of cities
+	srand(time(nullptr)); // Needed so random cities are actually random
 	City c;
 	int totalDist = 0;
-	std::vector<City> cities;
-	for (int i = 0; i < 50; i++) { // creates 50 random cities
-		cities.push_back(City());
+	City cities [numberOfCities];
+	for (int i = 0; i < numberOfCities; i++) { // creates 50 random cities
+		cities[i] = City();
 	}
-	numberOfCities = cities.size();
 	for (int i = 0; i < numberOfCities; i++) {
 		std::cout << "The coordinates for city " << i + 1 << " are\t" << cities[i].getX() << ", " << cities[i].getY() << std::endl;
 		if (i < numberOfCities - 1) {
 			totalDist += c.distance(cities[i], cities[i + 1]);
 		}
 	}
-	totalDist += c.distance(cities[0], cities[numberOfCities]); // Must return to starting city
+	totalDist += c.distance(cities[0], cities[numberOfCities - 1]); // Must return to starting city
 	std::cout << "Visiting cities in order, the total distance traveled is " << totalDist << std::endl;
     return 0;
 }
