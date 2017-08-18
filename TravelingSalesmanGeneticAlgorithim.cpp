@@ -66,8 +66,13 @@ private:
 	double fitness = 0;
 	int size;
 public:
-	// Constructor, Generates a random tour
-	Tour(std::vector<City> cities) 
+	// Constructor
+	Tour(std::vector<City> cities)
+	{
+		createIndividual(cities);
+	}
+	// Generates a random tour of all cities
+	void createIndividual(std::vector<City> cities) 
 	{
 		tour = cities; // Copies vector of cities
 		std::random_shuffle(tour.begin(), tour.end()); // Shuffles tour vector
@@ -106,12 +111,21 @@ public:
 		return 1 / getDistance();
 	}
 	// Check if a city is on tour
-	/*
 	bool onTour(City c)
 	{
-		return find(tour.begin(), tour.end(), c) != tour.end();
+		for (int i = 0; i < size; i++)
+		{
+			if(tour.at(i).getX() == c.getX()) // Does X coord match?
+			{
+				if(tour.at(i).getY() == c.getY()) // Does Y coord match?
+				{
+					return true;
+				}
+			}
+		}
+		return false;
 	}
-	*/
+	
 };
 // Population of tours
 class Population
@@ -121,18 +135,28 @@ private:
 	CityList cl;
 	int size;
 public:
-	// Constructor
+	// Constructor that seeds random tours of cities
 	Population(int popSize, int numCities)
 	{
 		for (int i = 0; i < numCities; i++) // First, add cities to list
 		{
 			cl.addCity(City());
 		}
-		for (int i = 0; i < popSize; i++);
+		for (int i = 0; i < popSize; i++); // Next, create population of tours
 		{
 			tours.push_back(cl.getCityList());
 		}
 		size = tours.size();
+	}
+	// Constructor that just sets size of tour
+	Population(int numCities)
+	{
+		size = numCities;
+	}
+	// Adds a tour to specific index
+	void addTour(Tour t)
+	{
+		tours.push_back(t);
 	}
 	// Finds shortest tour
 	Tour getFittest()
@@ -147,6 +171,22 @@ public:
 		}
 		return fittest;
 	}
+};
+
+// Breeds population to increase fitness
+class Genetics
+{
+private:
+	const double mutationRate = .0075; // Reccomended to be between .005 and .01
+	const int tournamentSize = 5;
+	std::vector<Tour> tours;
+public:
+	// Constructor
+	Genetics(std::vector<Tour> t)
+	{
+		tours = t;
+	}
+
 };
 int main()
 {
