@@ -11,6 +11,7 @@
 #include <string>
 
 // Holds city details
+
 struct City {
 private:
 	int x;
@@ -65,6 +66,12 @@ private:
 	double distance = 0;
 	double fitness = 0;
 	int size;
+	// Gets distance between two cities
+	double distanceTwoCities(City city1, City city2) {
+		int latDist = abs(city1.getX() - city2.getX());
+		int lonDist = abs(city1.getY() - city2.getY());
+		return sqrt((latDist * latDist) + (lonDist *lonDist)); // a^2 + b^2 = c^2
+	}
 public:
 	// Constructor
 	Tour(std::vector<City> cities)
@@ -75,7 +82,7 @@ public:
 	void createIndividual(std::vector<City> cities) 
 	{
 		tour = cities; // Copies vector of cities
-		std::random_shuffle(tour.begin(), tour.end()); // Shuffles tour vector
+		random_shuffle(tour.begin(), tour.end()); // Shuffles tour vector
 	}
 	// Gets city at i
 	City getCity(int i)
@@ -86,12 +93,6 @@ public:
 	void setCity(int i, City c)
 	{
 		tour.at(i) = c;
-	}
-	// Gets distance between two cities
-	double distanceTwoCities(City city1, City city2) {
-		int latDist = abs(city1.getX() - city2.getX());
-		int lonDist = abs(city1.getY() - city2.getY());
-		return sqrt((latDist * latDist) + (lonDist *lonDist)); // a^2 + b^2 = c^2
 	}
 	// Gets distance traveled
 	double getDistance()
@@ -146,7 +147,7 @@ public:
 		{
 			tours.push_back(cl.getCityList());
 		}
-		size = popSize;
+		size = tours.size();
 	}
 	// Constructor that just sets size of tour
 	Population(int popSize)
@@ -205,6 +206,7 @@ public:
 		}
 	}
 };
+
 int main()
 {
 	const int numberOfCities = 50; // Sets number of cities
