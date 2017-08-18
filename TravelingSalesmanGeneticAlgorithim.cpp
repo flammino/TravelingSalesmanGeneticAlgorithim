@@ -146,12 +146,12 @@ public:
 		{
 			tours.push_back(cl.getCityList());
 		}
-		size = tours.size();
+		size = popSize;
 	}
 	// Constructor that just sets size of tour
-	Population(int numCities)
+	Population(int popSize)
 	{
-		size = numCities;
+		size = popSize;
 	}
 	// Adds a tour to specific index
 	void addTour(Tour t)
@@ -171,6 +171,10 @@ public:
 		}
 		return fittest;
 	}
+	int getPopSize()
+	{
+		return size;
+	}
 };
 
 // Breeds population to increase fitness
@@ -179,14 +183,27 @@ class Genetics
 private:
 	const double mutationRate = .0075; // Reccomended to be between .005 and .01
 	const int tournamentSize = 5;
+	bool elitism = true; // If true fittest individual will move to next generation
 	std::vector<Tour> tours;
 public:
 	// Constructor
 	Genetics(std::vector<Tour> t)
 	{
 		tours = t;
-	}
 
+	}
+	// Evolves for one generation
+	Population evolve(Population p)
+	{
+		int size = p.getPopSize();
+		Population nextGen = Population(size);
+		int eliteOffset = 0;
+		if (elitism) // Saves fittest individual
+		{
+			eliteOffset = 1;
+			nextGen.addTour(p.getFittest());
+		}
+	}
 };
 int main()
 {
