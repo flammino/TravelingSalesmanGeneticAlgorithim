@@ -78,6 +78,11 @@ public:
 	{
 		createIndividual(cities);
 	}
+	// Default constructor
+	Tour()
+	{
+		size = 0;
+	}
 	// Generates a random tour of all cities
 	void createIndividual(std::vector<City> cities) 
 	{
@@ -88,6 +93,12 @@ public:
 	City getCity(int i)
 	{
 		return tour.at(i);
+	}
+	// Pushes city onto tour
+	void setCity(City c)
+	{
+		tour.push_back(c);
+		size++;
 	}
 	// Sets city at position i
 	void setCity(int i, City c)
@@ -126,7 +137,11 @@ public:
 		}
 		return false;
 	}
-	
+	int getTourSize()
+	{
+		size = tour.size();
+		return size;
+	}
 };
 // Population of tours
 class Population
@@ -134,7 +149,7 @@ class Population
 private:
 	std::vector<Tour> tours; // Holds population of tours
 	CityList cl;
-	int size;
+	int size = 0;
 public:
 	// Constructor that seeds random tours of cities
 	Population(int popSize, int numCities)
@@ -143,21 +158,32 @@ public:
 		{
 			cl.addCity(City());
 		}
-		for (int i = 0; i < popSize; i++); // Next, create population of tours
+		for (int i = 0; i < popSize; i++) // Next, create population of tours
 		{
 			tours.push_back(cl.getCityList());
 		}
 		size = tours.size();
 	}
-	// Constructor that just sets size of tour
-	Population(int popSize)
+	// Default constructor
+	Population()
 	{
-		size = popSize;
+		size = 0;
 	}
-	// Adds a tour to specific index
+	// Adds a tour
 	void addTour(Tour t)
 	{
 		tours.push_back(t);
+		size++;
+	}
+	// Adds a tour to a specific index
+	void addTour(Tour t, int i)
+	{
+		tours.at(i) = t;
+	}
+	// Gets tour at i
+	Tour getTour(int i)
+	{
+		return tours.at(i);
 	}
 	// Finds shortest tour
 	Tour getFittest()
@@ -182,41 +208,126 @@ public:
 class Genetics
 {
 private:
-	const double mutationRate = .0075; // Reccomended to be between .005 and .01
-	const int tournamentSize = 5;
+	const double mutationRate = .01; // Reccomended to be between .005 and .01
+	const int tournamentSize = 10;
 	bool elitism = true; // If true fittest individual will move to next generation
 	std::vector<Tour> tours;
-public:
-	// Constructor
-	Genetics(std::vector<Tour> t)
+	// Decides which tours to crossover
+	Tour tournament(Population p)
 	{
-		tours = t;
-
+		Population tourney;
+		int selectionRange = p.getPopSize() - 1;
+		for(int i = 0; i < tournamentSize; i++) // Grab random tours for tournament
+		{
+			int randomTour = rand() % selectionRange;
+			tourney.addTour(p.getTour(randomTour));
+		}
+		Tour fit = tourney.getFittest();
+		return fit;
 	}
+	// Randomly mutates individuals based on mutation rate
+	void mutate(Tour t)
+	{
+		int tSize = t.getTourSize(); // Tour size
+		for(int i = 0; i < tSize; i++)
+		{
+			if(double(rand() / RAND_MAX) <= mutationRate) // roll for mutation
+			{
+				int swap = rand() % tSize; // random city to swap
+				City c1 = t.getCity(i);
+				City c2 = t.getCity(swap);
+				t.setCity(swap, c1);
+				t.setCity(i, c2);
+			}
+		}
+	}
+	// Crosses a set of parents, returns child
+	Tour cross(Tour parent1, Tour parent2)
+	{
+		int tSize = parent1.getTourSize();
+		Tour child = Tour();
+		/*
+		City dummy = parent1.getCity(0);
+		for(int i = 0; i < tSize; i++) // need dummy cities in child in order to swap in parent cities
+		{
+			child.setCity(dummy);
+		}
+		*/
+		int split = rand() % tSize; // How much of tour to take from parent1
+		for (int i = 0; i < split; i++) // Add cities from parent 1;
+		{
+			child.setCity(parent1.getCity(i));
+		}
+		for (int i = 0; i < tSize; i++) // Add remaining cities from parent2
+		{
+			if(!child.onTour(parent2.getCity(i)))
+			{
+				child.setCity(parent2.getCity(i));
+			}
+		}
+		return child;
+	}
+public:
 	// Evolves for one generation
 	Population evolve(Population p)
 	{
 		int size = p.getPopSize();
-		Population nextGen = Population(size);
+		Population nextGen = Population();
 		int eliteOffset = 0;
 		if (elitism) // Saves fittest individual
 		{
 			eliteOffset = 1;
 			nextGen.addTour(p.getFittest());
 		}
+		for (int i = eliteOffset; i < size; i++) // Create next generation
+		{
+			Tour parent1 = tournament(p);
+			Tour parent2 = tournament(p);
+			Tour child = cross(parent1, parent2);
+			nextGen.addTour(child);
+		}
+		
+		for (int i = eliteOffset; i < size; i++) // Mutate next generation
+		{
+			mutate(nextGen.getTour(i));
+		}
+		return nextGen;
 	}
 };
 
 int main()
 {
 	const int numberOfCities = 50; // Sets number of cities
-	const int populationSize = 50; // Sets size of population
+	int populationSize = 50; // Sets size of population
+	const int numberGenerations = 100; // Number of generations to evolve
 	srand(time(nullptr)); // Needed so random cities are actually random
 	Population p = Population(populationSize, numberOfCities); // Creates population
 	Tour fittest = p.getFittest();
+	Genetics g;
+	
+	double initialDistance = fittest.getDistance();
 	std::cout << "Of the " << populationSize << " initial tours of the " << numberOfCities <<
-		" cities the shortest distance was:\t" << fittest.getDistance() << std::endl;
-	std::cout << "\n\nThe intial route was: \n";
+		" cities the shortest distance was:\t" << initialDistance << std::endl;
+	std::cout << "\n\nThe intial route was:\n";
+	
+	for (int i = 0; i < numberOfCities; i++) // Shows route of cities identified by coordinates
+	{
+		std::cout << "(" << fittest.getCity(i).getX() << "," << fittest.getCity(i).getY() << ") -> ";
+	}
+	
+	std::cout << "(" << fittest.getCity(0).getX() << "," << fittest.getCity(0).getY() << ")\n"; // Back to first city
+
+	for(int i = 0; i < numberGenerations; i++) // Evolve
+	{
+		p = g.evolve(p);
+	}
+	fittest = p.getFittest();
+	double improvedDistance = fittest.getDistance();
+	double improvement = initialDistance - improvedDistance;
+	double percentImprovement = improvement/initialDistance * 100;
+	std::cout << "\n\nAfter " << numberGenerations << " generations, the shortest route is:\t" << improvedDistance <<
+		".\nThis is an improvement of " << percentImprovement << "%\n";
+	std::cout << "\n\nThe evolved route is:\n";
 	for (int i = 0; i < numberOfCities; i++) // Shows route of cities identified by coordinates
 	{
 		std::cout << "(" << fittest.getCity(i).getX() << "," << fittest.getCity(i).getY() << ") -> ";
