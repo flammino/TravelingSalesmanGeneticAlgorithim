@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <string>
 
+// Holds city details
 struct City {
 private:
 	int x;
@@ -49,6 +50,11 @@ public:
 	City getCity(int i)
 	{
 		return cities.at(i);
+	}
+	// Get list of cities
+	std::vector<City> getCityList()
+	{
+		return cities;
 	}
 };
 // Holds each tour individual
@@ -103,6 +109,41 @@ public:
 	bool onTour(City c)
 	{
 		return find(tour.begin(), tour.end(), c) != tour.end();
+	}
+};
+// Population of tours
+class Population
+{
+private:
+	std::vector<Tour> tours; // Holds population of tours
+	CityList cl;
+	int size;
+public:
+	// Constructor
+	Population(int popSize, int numCities)
+	{
+		for (int i = 0; i++; i < numCities) // First, add cities to list
+		{
+			cl.addCity(City());
+		}
+		for (int i = 0; i++; i < popSize);
+		{
+			tours.push_back(cl.getCityList());
+		}
+		size = tours.size();
+	}
+	// Finds shortest tour
+	Tour getFittest()
+	{
+		Tour fittest = tours.at(0);
+		for (int i = 1; i < size; i++)
+		{
+			if (fittest.getFitness() < tours.at(i).getFitness())
+			{
+				fittest = tours.at(i);
+			}
+		}
+		return fittest;
 	}
 };
 int main()
