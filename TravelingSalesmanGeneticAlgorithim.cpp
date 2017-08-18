@@ -92,7 +92,7 @@ public:
 	double getDistance()
 	{
 		distance = 0;
-		size = tour.size();
+		int size = tour.size();
 		for (int i = 0; i < size - 1; i++)
 		{
 			distance += distanceTwoCities(tour.at(i), tour.at(i + 1));
@@ -106,10 +106,12 @@ public:
 		return 1 / getDistance();
 	}
 	// Check if a city is on tour
+	/*
 	bool onTour(City c)
 	{
 		return find(tour.begin(), tour.end(), c) != tour.end();
 	}
+	*/
 };
 // Population of tours
 class Population
@@ -122,11 +124,11 @@ public:
 	// Constructor
 	Population(int popSize, int numCities)
 	{
-		for (int i = 0; i++; i < numCities) // First, add cities to list
+		for (int i = 0; i < numCities; i++) // First, add cities to list
 		{
 			cl.addCity(City());
 		}
-		for (int i = 0; i++; i < popSize);
+		for (int i = 0; i < popSize; i++);
 		{
 			tours.push_back(cl.getCityList());
 		}
@@ -149,21 +151,17 @@ public:
 int main()
 {
 	const int numberOfCities = 50; // Sets number of cities
+	const int populationSize = 50; // Sets size of population
 	srand(time(nullptr)); // Needed so random cities are actually random
-	City c;
-	int totalDist = 0;
-	City cities [numberOfCities];
-	for (int i = 0; i < numberOfCities; i++) { // creates 50 random cities
-		cities[i] = City();
+	Population p = Population(populationSize, numberOfCities); // Creates population
+	Tour fittest = p.getFittest();
+	std::cout << "Of the " << populationSize << " initial tours of the " << numberOfCities <<
+		" cities the shortest distance was:\t" << fittest.getDistance() << std::endl;
+	std::cout << "\n\nThe intial route was: \n";
+	for (int i = 0; i < numberOfCities; i++) // Shows route of cities identified by coordinates
+	{
+		std::cout << "(" << fittest.getCity(i).getX() << "," << fittest.getCity(i).getY() << ") -> ";
 	}
-	for (int i = 0; i < numberOfCities; i++) {
-		std::cout << "The coordinates for city " << i + 1 << " are\t" << cities[i].getX() << ", " << cities[i].getY() << std::endl;
-		if (i < numberOfCities - 1) {
-			totalDist += c.distance(cities[i], cities[i + 1]);
-		}
-	}
-	totalDist += c.distance(cities[0], cities[numberOfCities - 1]); // Must return to starting city
-	std::cout << "Visiting cities in order, the total distance traveled is " << totalDist << std::endl;
-    return 0;
+	std::cout << "(" << fittest.getCity(0).getX() << "," << fittest.getCity(0).getY() << ")\n"; // Back to first city
 }
 
