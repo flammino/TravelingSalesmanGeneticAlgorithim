@@ -209,18 +209,37 @@ class Genetics
 {
 private:
 	const double mutationRate = .01; // Reccomended to be between .005 and .01
-	const int tournamentSize = 10;
+	const int tournamentSize = 5;
 	bool elitism = true; // If true fittest individual will move to next generation
 	std::vector<Tour> tours;
 	// Decides which tours to crossover
 	Tour tournament(Population p)
 	{
 		Population tourney;
-		int selectionRange = p.getPopSize() - 1;
+		int selectionRange = p.getPopSize();
 		for(int i = 0; i < tournamentSize; i++) // Grab random tours for tournament
 		{
 			int randomTour = rand() % selectionRange;
 			tourney.addTour(p.getTour(randomTour));
+		}
+		Tour fit = tourney.getFittest();
+		return fit;
+	}
+	// Tournament that excludes one tour from population
+	Tour tournament(Population p, Tour t)
+	{
+		Population tourney;
+		int selectionRange = p.getPopSize() - 1;
+		int i = 0;
+		int dist = t.getDistance(); // Distance of first parent for comparison
+		while (i < tournamentSize)
+		{
+			int randomTour = rand() % selectionRange;
+			if (p.getTour(randomTour).getDistance() != dist) // Ensures second parent isn't first parent
+			{
+				tourney.addTour(p.getTour(randomTour));
+				i++;
+			}
 		}
 		Tour fit = tourney.getFittest();
 		return fit;
@@ -253,17 +272,22 @@ private:
 			child.setCity(dummy);
 		}
 		*/
-		int split = rand() % tSize; // How much of tour to take from parent1
-		for (int i = 0; i < split; i++) // Add cities from parent 1;
+		int split1 = rand() % (tSize / 2); // How much of tour to take from first half of parent1
+		int split2 = rand() % (tSize / 2); // How much of tour to take from second half of parent1
+		split2 = tSize - split2; // Where to start taking chromosones from parent1
+		for (int i = 0; i < split1; i++) // Add cities from first half of parent 1;
 		{
 			child.setCity(parent1.getCity(i));
 		}
-		for (int i = 0; i < tSize; i++) // Add remaining cities from parent2
+
+		for (int i = split1; i < split2; i++) // Add remaining cities from parent2
 		{
-			if(!child.onTour(parent2.getCity(i)))
-			{
-				child.setCity(parent2.getCity(i));
-			}
+			child.setCity(parent2.getCity(i));
+		}
+
+		for (int i = split2; i < tSize; i++) // Add cities from second half of parent 1
+		{
+			child.setCity((parent1.getCity(i)));
 		}
 		return child;
 	}
@@ -282,7 +306,7 @@ public:
 		for (int i = eliteOffset; i < size; i++) // Create next generation
 		{
 			Tour parent1 = tournament(p);
-			Tour parent2 = tournament(p);
+			Tour parent2 = tournament(p, parent1);
 			Tour child = cross(parent1, parent2);
 			nextGen.addTour(child);
 		}
@@ -298,7 +322,7 @@ public:
 int main()
 {
 	const int numberOfCities = 50; // Sets number of cities
-	int populationSize = 50; // Sets size of population
+	int populationSize = 100; // Sets size of population
 	const int numberGenerations = 100; // Number of generations to evolve
 	srand(time(nullptr)); // Needed so random cities are actually random
 	Population p = Population(populationSize, numberOfCities); // Creates population
