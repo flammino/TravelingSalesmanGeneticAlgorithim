@@ -9,8 +9,6 @@
 #include <vector>
 #include <algorithm>
 #include <string>
-#include <map>
-#include <unordered_map>
 #include <unordered_set>
 
 // Holds city details
