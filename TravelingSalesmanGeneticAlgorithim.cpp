@@ -9,6 +9,9 @@
 #include <vector>
 #include <algorithm>
 #include <string>
+#include <map>
+#include <unordered_map>
+#include <unordered_set>
 
 // Holds city details
 
@@ -16,16 +19,19 @@ struct City {
 private:
 	int x;
 	int y;
+	int id;
 public:
 	// Constructor with random city coordinatates in a 1000 unit grid
-	City() {
+	City(int i) {
 		x = rand() % 1000;
 		y = rand() % 1000;
+		id = i;
 	}
 	// Constructor with specific city coordinates
-	City(int lat, int lon) {
+	City(int lat, int lon, int i) {
 		x = lat;
 		y = lon;
+		id = i;
 	}
 	// Get x coordinat;
 	int getX() {
@@ -34,6 +40,11 @@ public:
 	// Get y coordinate
 	int getY() {
 		return y;
+	}
+	// Get city id
+	int getID()
+	{
+		return id;
 	}
 };
 
@@ -122,6 +133,9 @@ public:
 	{
 		return 1 / getDistance();
 	}
+	/* 
+	 * REPLACED BY city.getID()
+	 * 
 	// Check if a city is on tour
 	bool onTour(City c)
 	{
@@ -137,6 +151,7 @@ public:
 		}
 		return false;
 	}
+	*/
 	int getTourSize()
 	{
 		size = tour.size();
@@ -156,7 +171,7 @@ public:
 	{
 		for (int i = 0; i < numCities; i++) // First, add cities to list
 		{
-			cl.addCity(City());
+			cl.addCity(City(i));
 		}
 		for (int i = 0; i < popSize; i++) // Next, create population of tours
 		{
@@ -265,6 +280,7 @@ private:
 	{
 		int tSize = parent1.getTourSize();
 		Tour child = Tour();
+		std::unordered_set<int> citiesOnTour; // Holds IDs of cities currently on tour, prevents repeats
 		/*
 		City dummy = parent1.getCity(0);
 		for(int i = 0; i < tSize; i++) // need dummy cities in child in order to swap in parent cities
@@ -275,20 +291,39 @@ private:
 		int split1 = rand() % (tSize / 2); // How much of tour to take from first half of parent1
 		int split2 = rand() % (tSize / 2); // How much of tour to take from second half of parent1
 		split2 = tSize - split2; // Where to start taking chromosones from parent1
-		for (int i = 0; i < split1; i++) // Add cities from first half of parent 1;
+		for (int i = 0; i < split1; i++) // Add cities from first half of parent1;
+		{
+
+			child.setCity(parent1.getCity(i));
+			citiesOnTour.insert(parent1.getCity(i).getID());
+		}
+		for (int i = split2; i < tSize; i++)
 		{
 			child.setCity(parent1.getCity(i));
+			citiesOnTour.insert(parent1.getCity(i).getID());
 		}
-
-		for (int i = split1; i < split2; i++) // Add remaining cities from parent2
+		// Fill in missing cities using parent 2
+		int index = 0;
+		while (child.getTourSize() != tSize)
+		{
+			if (citiesOnTour.count(parent2.getCity(index).getID()) == 0)
+			{
+				child.setCity(parent2.getCity(index));
+			}
+			index++;
+		}
+		/*
+		for (int i = split1; i < split2; i++) // Add center region cities from parent2
 		{
 			child.setCity(parent2.getCity(i));
 		}
 
-		for (int i = split2; i < tSize; i++) // Add cities from second half of parent 1
+		for (int i = split2; i < tSize; i++) // Add cities from second half of parent1
 		{
+
 			child.setCity((parent1.getCity(i)));
 		}
+		*/
 		return child;
 	}
 public:
@@ -322,7 +357,7 @@ public:
 int main()
 {
 	const int numberOfCities = 50; // Sets number of cities
-	int populationSize = 100; // Sets size of population
+	int populationSize = 25; // Sets size of population
 	const int numberGenerations = 100; // Number of generations to evolve
 	srand(time(nullptr)); // Needed so random cities are actually random
 	Population p = Population(populationSize, numberOfCities); // Creates population
