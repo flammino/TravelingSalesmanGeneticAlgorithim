@@ -1,4 +1,6 @@
-# This program finds near-optimal solutions to the travelling salesman problem by using a genetic algorithm.
+# TravelingSalemanGeneticAlgorithm
+
+### This program finds near-optimal solutions to the travelling salesman problem by using a genetic algorithm.
 
 By default a random grid of cities will be created- to use cities with specific cordinates use the city constructor found at line 29 to add to the citylist (line 56)
 
