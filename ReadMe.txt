@@ -1,40 +1,23 @@
-========================================================================
-    CONSOLE APPLICATION : TravelingSalesmanGeneticAlgorithim Project Overview
-========================================================================
+This program finds near-optimal solutions to the travelling salesman problem by using a genetic algorithm.
 
-AppWizard has created this TravelingSalesmanGeneticAlgorithim application for you.
-
-This file contains a summary of what you will find in each of the files that
-make up your TravelingSalesmanGeneticAlgorithim application.
+By default a random grid of cities will be created- to use cities with specific cordinates use the city constructor found at line 29 to add to the citylist (line 56)
 
 
-TravelingSalesmanGeneticAlgorithim.vcxproj
-    This is the main project file for VC++ projects generated using an Application Wizard.
-    It contains information about the version of Visual C++ that generated the file, and
-    information about the platforms, configurations, and project features selected with the
-    Application Wizard.
+Sample run:
 
-TravelingSalesmanGeneticAlgorithim.vcxproj.filters
-    This is the filters file for VC++ projects generated using an Application Wizard. 
-    It contains information about the association between the files in your project 
-    and the filters. This association is used in the IDE to show grouping of files with
-    similar extensions under a specific node (for e.g. ".cpp" files are associated with the
-    "Source Files" filter).
+```
+Of the 30 initial tours of the 50 cities the shortest distance was:     24764.2
 
-TravelingSalesmanGeneticAlgorithim.cpp
-    This is the main application source file.
 
-/////////////////////////////////////////////////////////////////////////////
-Other standard files:
+The intial route was:
+(896,259) -> (934,130) -> (564,472) -> (994,15) -> (953,237) -> (975,2) -> (703,144) -> (482,245) -> (86,208) -> (979,970) -> (94,290) -> (701,262) -> (251,145) -> (732,633) -> (447,689) -> (791,168) -> (569,200) -> (763,763) -> (159,668) -> (888,179) -> (495,15) -> (940,557) -> (176,144) -> (47,264) -> (100,676) -> (69,776) -> (287,536) -> (61,149) -> (109,562) -> (884,938) -> (502,410) -> (378,690) -> (878,741) -> (269,736) -> (916,498) -> (879,559) -> (182,393) -> (756,592) -> (769,886) -> (766,765) -> (921,471) -> (989,143) -> (432,190) -> (634,317) -> (474,131) -> (515,992) -> (926,895) -> (92,167) -> (211,653) -> (739,598) -> (896,259)
 
-StdAfx.h, StdAfx.cpp
-    These files are used to build a precompiled header (PCH) file
-    named TravelingSalesmanGeneticAlgorithim.pch and a precompiled types file named StdAfx.obj.
 
-/////////////////////////////////////////////////////////////////////////////
-Other notes:
+After 100 generations, the shortest route is:   10411.4.
+This is an improvement of 57.9577%
 
-AppWizard uses "TODO:" comments to indicate parts of the source code you
-should add to or customize.
 
-/////////////////////////////////////////////////////////////////////////////
+The evolved route is:
+(447,689) -> (564,472) -> (86,208) -> (176,144) -> (61,149) -> (94,290) -> (182,393) -> (47,264) -> (251,145) -> (92,167) -> (159,668) -> (269,736) -> (378,690) -> (211,653) -> (109,562) -> (100,676) -> (69,776) -> (287,536) -> (502,410) -> (482,245) -> (432,190) -> (634,317) -> (756,592) -> (879,559) -> (921,471) -> (989,143) -> (896,259) -> (934,130) -> (888,179) -> (975,2) -> (703,144) -> (994,15) -> (791,168) -> (953,237) -> (701,262) -> (495,15) -> (474,131) -> (569,200) -> (739,598) -> (732,633) -> (763,763) -> (979,970) -> (769,886) -> (878,741) -> (884,938) -> (926,895) -> (940,557) -> (916,498) -> (766,765) -> (515,992) -> (447,689)
+Press any key to continue . . .
+'''
