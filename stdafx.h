@@ -9,6 +9,14 @@
 
 #include <stdio.h>
 #include <tchar.h>
+#include <stdlib.h>
+#include <iostream>
+#include <time.h>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <unordered_set>
+
 
 
 

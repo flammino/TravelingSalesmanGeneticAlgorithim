@@ -3,44 +3,42 @@
 // Uses a genetic algorithm to find a good solution to the traveling salesman problem
 
 #include "stdafx.h"
+#include <stdlib.h>
+#include <iostream>
+#include <time.h>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <unordered_set>
 
 // Holds city details
 
-struct City
-{
+struct City {
 private:
 	int x;
 	int y;
 	int id;
 public:
 	// Constructor with random city coordinatates in a 1000 unit grid
-	City(int i)
-	{
+	City(int i) {
 		x = rand() % 1000;
 		y = rand() % 1000;
 		id = i;
 	}
-
 	// Constructor with specific city coordinates
-	City(int lat, int lon, int i)
-	{
+	City(int lat, int lon, int i) {
 		x = lat;
 		y = lon;
 		id = i;
 	}
-
 	// Get x coordinat;
-	int getX()
-	{
+	int getX() {
 		return x;
 	}
-
 	// Get y coordinate
-	int getY()
-	{
+	int getY() {
 		return y;
 	}
-
 	// Get city id
 	int getID()
 	{
@@ -55,24 +53,20 @@ private:
 	std::vector<City> cities; // Holds cities
 public:
 	// Adds city
-	void addCity(City city)
-	{
+	void addCity(City city) {
 		cities.push_back(city);
 	}
-
 	// Gets city, takes city index as parameter
 	City getCity(int i)
 	{
 		return cities.at(i);
 	}
-
 	// Get list of cities
 	std::vector<City> getCityList()
 	{
 		return cities;
 	}
 };
-
 // Holds each tour individual
 class Tour
 {
@@ -82,52 +76,44 @@ private:
 	double fitness = 0;
 	int size;
 	// Gets distance between two cities
-	double distanceTwoCities(City city1, City city2)
-	{
+	double distanceTwoCities(City city1, City city2) {
 		int latDist = abs(city1.getX() - city2.getX());
 		int lonDist = abs(city1.getY() - city2.getY());
-		return sqrt((latDist * latDist) + (lonDist * lonDist)); // a^2 + b^2 = c^2
+		return sqrt((latDist * latDist) + (lonDist *lonDist)); // a^2 + b^2 = c^2
 	}
-
 public:
 	// Constructor
 	Tour(std::vector<City> cities)
 	{
 		createIndividual(cities);
 	}
-
 	// Default constructor
 	Tour()
 	{
 		size = 0;
 	}
-
 	// Generates a random tour of all cities
-	void createIndividual(std::vector<City> cities)
+	void createIndividual(std::vector<City> cities) 
 	{
 		tour = cities; // Copies vector of cities
 		random_shuffle(tour.begin(), tour.end()); // Shuffles tour vector
 	}
-
 	// Gets city at i
 	City getCity(int i)
 	{
 		return tour.at(i);
 	}
-
 	// Pushes city onto tour
 	void setCity(City c)
 	{
 		tour.push_back(c);
 		size++;
 	}
-
 	// Sets city at position i
 	void setCity(int i, City c)
 	{
 		tour.at(i) = c;
 	}
-
 	// Gets distance traveled
 	double getDistance()
 	{
@@ -140,13 +126,11 @@ public:
 		distance += distanceTwoCities(tour.at(0), tour.at(size - 1)); // Return to starting city
 		return distance;
 	}
-
 	// Gets fitness of tour individual
 	double getFitness()
 	{
 		return 1 / getDistance();
 	}
-
 	/* 
 	 * REPLACED BY city.getID()
 	 * 
@@ -166,15 +150,12 @@ public:
 		return false;
 	}
 	*/
-
-	// Gets size of tour
 	int getTourSize()
 	{
 		size = tour.size();
 		return size;
 	}
 };
-
 // Population of tours
 class Population
 {
@@ -196,32 +177,27 @@ public:
 		}
 		size = tours.size();
 	}
-
 	// Default constructor
 	Population()
 	{
 		size = 0;
 	}
-
 	// Adds a tour
 	void addTour(Tour t)
 	{
 		tours.push_back(t);
 		size++;
 	}
-
 	// Adds a tour to a specific index
 	void addTour(Tour t, int i)
 	{
 		tours.at(i) = t;
 	}
-
 	// Gets tour at i
 	Tour getTour(int i)
 	{
 		return tours.at(i);
 	}
-
 	// Finds shortest tour
 	Tour getFittest()
 	{
@@ -235,7 +211,6 @@ public:
 		}
 		return fittest;
 	}
-
 	int getPopSize()
 	{
 		return size;
@@ -246,7 +221,7 @@ public:
 class Genetics
 {
 private:
-	const double mutationRate = .075; // Reccomended to be between .005 and .01
+	const double mutationRate = .01; // Reccomended to be between .005 and .01
 	const int tournamentSize = 5;
 	bool elitism = true; // If true fittest individual will move to next generation
 	std::vector<Tour> tours;
@@ -255,7 +230,7 @@ private:
 	{
 		Population tourney;
 		int selectionRange = p.getPopSize();
-		for (int i = 0; i < tournamentSize; i++) // Grab random tours for tournament
+		for(int i = 0; i < tournamentSize; i++) // Grab random tours for tournament
 		{
 			int randomTour = rand() % selectionRange;
 			tourney.addTour(p.getTour(randomTour));
@@ -263,51 +238,32 @@ private:
 		Tour fit = tourney.getFittest();
 		return fit;
 	}
-
 	// Tournament that excludes one tour from population
 	Tour tournament(Population p, Tour t)
 	{
 		Population tourney;
 		int selectionRange = p.getPopSize() - 1;
-		int size = t.getTourSize();
-		std::string p1Tour = "";
-		for (int i = 0; i < size; i++)
-		{
-			p1Tour += t.getCity(i).getID();
-		}
-		//int dist = t.getDistance(); // Distance of first parent for comparison
 		int i = 0;
+		int dist = t.getDistance(); // Distance of first parent for comparison
 		while (i < tournamentSize)
 		{
 			int randomTour = rand() % selectionRange;
-			for (int j = 0; j < size; j++)
-			{
-				if (p.getTour(randomTour).getCity(j).getID() != p1Tour[j])
-				{
-					tourney.addTour(p.getTour(randomTour));
-					i++; // increment tournament when a tour is added
-					break;
-				}
-			}
-			/*
 			if (p.getTour(randomTour).getDistance() != dist) // Ensures second parent isn't first parent
 			{
 				tourney.addTour(p.getTour(randomTour));
 				i++;
 			}
-			*/
 		}
 		Tour fit = tourney.getFittest();
 		return fit;
 	}
-
 	// Randomly mutates individuals based on mutation rate
 	void mutate(Tour t)
 	{
 		int tSize = t.getTourSize(); // Tour size
-		for (int i = 0; i < tSize; i++)
+		for(int i = 0; i < tSize; i++)
 		{
-			if (double(rand() / RAND_MAX) <= mutationRate) // roll for mutation
+			if(double(rand() / RAND_MAX) <= mutationRate) // roll for mutation
 			{
 				int swap = rand() % tSize; // random city to swap
 				City c1 = t.getCity(i);
@@ -317,7 +273,6 @@ private:
 			}
 		}
 	}
-
 	// Crosses a set of parents, returns child
 	Tour cross(Tour parent1, Tour parent2)
 	{
@@ -336,6 +291,7 @@ private:
 		split2 = tSize - split2; // Where to start taking chromosones from parent1
 		for (int i = 0; i < split1; i++) // Add cities from first half of parent1;
 		{
+
 			child.setCity(parent1.getCity(i));
 			citiesOnTour.insert(parent1.getCity(i).getID());
 		}
@@ -368,7 +324,6 @@ private:
 		*/
 		return child;
 	}
-
 public:
 	// Evolves for one generation
 	Population evolve(Population p)
@@ -388,7 +343,7 @@ public:
 			Tour child = cross(parent1, parent2);
 			nextGen.addTour(child);
 		}
-
+		
 		for (int i = eliteOffset; i < size; i++) // Mutate next generation
 		{
 			mutate(nextGen.getTour(i));
@@ -400,17 +355,15 @@ public:
 int main()
 {
 	const int numberOfCities = 50; // Sets number of cities
-	int populationSize = 30; // Sets size of population
+	int populationSize = 25; // Sets size of population
 	const int numberGenerations = 100; // Number of generations to evolve
 	srand(time(nullptr)); // Needed so random cities are actually random
+	Population p = Population(populationSize, numberOfCities); // Creates population
+	Tour fittest = p.getFittest();
+	Genetics g;
 	std::vector<int> testing;
-		Population p = Population(populationSize, numberOfCities); // Creates population
-		Tour fittest = p.getFittest();
-		Genetics g;
-
-
+	for (int i = 0; i < 500; i++) {
 		double initialDistance = fittest.getDistance();
-
 		std::cout << "Of the " << populationSize << " initial tours of the " << numberOfCities <<
 			" cities the shortest distance was:\t" << initialDistance << std::endl;
 		std::cout << "\n\nThe intial route was:\n";
@@ -421,17 +374,15 @@ int main()
 		}
 
 		std::cout << "(" << fittest.getCity(0).getX() << "," << fittest.getCity(0).getY() << ")\n"; // Back to first city
-		int stime = clock();
+
 		for (int i = 0; i < numberGenerations; i++) // Evolve
 		{
 			p = g.evolve(p);
 		}
-		int etime = clock();
 		fittest = p.getFittest();
 		double improvedDistance = fittest.getDistance();
 		double improvement = initialDistance - improvedDistance;
 		double percentImprovement = improvement / initialDistance * 100;
-		testing.push_back(percentImprovement);
 		std::cout << "\n\nAfter " << numberGenerations << " generations, the shortest route is:\t" << improvedDistance <<
 			".\nThis is an improvement of " << percentImprovement << "%\n";
 		std::cout << "\n\nThe evolved route is:\n";
@@ -440,5 +391,11 @@ int main()
 			std::cout << "(" << fittest.getCity(i).getX() << "," << fittest.getCity(i).getY() << ") -> ";
 		}
 		std::cout << "(" << fittest.getCity(0).getX() << "," << fittest.getCity(0).getY() << ")\n"; // Back to first city
-	//	std::cout << std::endl << std::endl << etime - stime << std::endl;
+		testing.push_back(percentImprovement);
+	}
+	for (int i = 0; i < testing.size(); i++)
+	{
+		std::cout << testing.at(i);
+	}
 }
+
