@@ -4,8 +4,6 @@
 
 #### I would reccomend lowering the number of generations if running in debug mode.
 
-By default a random grid of cities will be created- to use cities with specific cordinates use the city constructor found at line 29 to add to the citylist (line 56)
-
 
 ## Sample run:
 
