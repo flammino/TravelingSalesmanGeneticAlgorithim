@@ -131,13 +131,15 @@ public:
 	// Gets distance traveled
 	double getDistance()
 	{
-		distance = 0;
-		int size = tour.size();
-		for (int i = 0; i < size - 1; i++)
+		if (distance == 0) 
 		{
-			distance += distanceTwoCities(tour.at(i), tour.at(i + 1));
+			int size = tour.size();
+			for (int i = 0; i < size - 1; i++)
+			{
+				distance += distanceTwoCities(tour.at(i), tour.at(i + 1));
+			}
+			distance += distanceTwoCities(tour.at(0), tour.at(size - 1)); // Return to starting city
 		}
-		distance += distanceTwoCities(tour.at(0), tour.at(size - 1)); // Return to starting city
 		return distance;
 	}
 
@@ -146,26 +148,6 @@ public:
 	{
 		return 1 / getDistance();
 	}
-
-	/* 
-	 * REPLACED BY city.getID()
-	 * 
-	// Check if a city is on tour
-	bool onTour(City c)
-	{
-		for (int i = 0; i < size; i++)
-		{
-			if(tour.at(i).getX() == c.getX()) // Does X coord match?
-			{
-				if(tour.at(i).getY() == c.getY()) // Does Y coord match?
-				{
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	*/
 
 	// Gets size of tour
 	int getTourSize()
@@ -275,7 +257,7 @@ private:
 		{
 			p1Tour += t.getCity(i).getID();
 		}
-		//int dist = t.getDistance(); // Distance of first parent for comparison
+
 		int i = 0;
 		while (i < tournamentSize)
 		{
@@ -289,13 +271,7 @@ private:
 					break;
 				}
 			}
-			/*
-			if (p.getTour(randomTour).getDistance() != dist) // Ensures second parent isn't first parent
-			{
-				tourney.addTour(p.getTour(randomTour));
-				i++;
-			}
-			*/
+
 		}
 		Tour fit = tourney.getFittest();
 		return fit;
@@ -324,13 +300,6 @@ private:
 		int tSize = parent1.getTourSize();
 		Tour child = Tour();
 		std::unordered_set<int> citiesOnTour; // Holds IDs of cities currently on tour, prevents repeats
-		/*
-		City dummy = parent1.getCity(0);
-		for(int i = 0; i < tSize; i++) // need dummy cities in child in order to swap in parent cities
-		{
-			child.setCity(dummy);
-		}
-		*/
 		int split1 = rand() % (tSize / 2); // How much of tour to take from first half of parent1
 		int split2 = rand() % (tSize / 2); // How much of tour to take from second half of parent1
 		split2 = tSize - split2; // Where to start taking chromosones from parent1
@@ -354,18 +323,6 @@ private:
 			}
 			index++;
 		}
-		/*
-		for (int i = split1; i < split2; i++) // Add center region cities from parent2
-		{
-			child.setCity(parent2.getCity(i));
-		}
-
-		for (int i = split2; i < tSize; i++) // Add cities from second half of parent1
-		{
-
-			child.setCity((parent1.getCity(i)));
-		}
-		*/
 		return child;
 	}
 
@@ -401,7 +358,7 @@ int main()
 {
 	const int numberOfCities = 50; // Sets number of cities
 	int populationSize = 30; // Sets size of population
-	const int numberGenerations = 100; // Number of generations to evolve
+	const int numberGenerations = 2000; // Number of generations to evolve
 	srand(time(nullptr)); // Needed so random cities are actually random
 	std::vector<int> testing;
 		Population p = Population(populationSize, numberOfCities); // Creates population
@@ -440,5 +397,6 @@ int main()
 			std::cout << "(" << fittest.getCity(i).getX() << "," << fittest.getCity(i).getY() << ") -> ";
 		}
 		std::cout << "(" << fittest.getCity(0).getX() << "," << fittest.getCity(0).getY() << ")\n"; // Back to first city
-	//	std::cout << std::endl << std::endl << etime - stime << std::endl;
+		std::cout << std::endl << std::endl << "Evolving for " << numberGenerations << " generations took " <<
+			etime- stime << " ticks." << std::endl;
 }
