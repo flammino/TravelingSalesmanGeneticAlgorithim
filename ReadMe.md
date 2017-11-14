@@ -2,7 +2,7 @@
 
 ### This program finds near-optimal solutions to the travelling salesman problem by using a genetic algorithm.
 
-#### I would reccomend lowering the number of generations if running in debug mode.
+#### I would recommend lowering the number of generations if running in debug mode.
 
 
 ## Sample run:
