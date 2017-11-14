@@ -358,7 +358,7 @@ int main()
 {
 	const int numberOfCities = 50; // Sets number of cities
 	int populationSize = 30; // Sets size of population
-	const int numberGenerations = 2000; // Number of generations to evolve
+	const int numberGenerations = 5000; // Number of generations to evolve
 	srand(time(nullptr)); // Needed so random cities are actually random
 	std::vector<int> testing;
 		Population p = Population(populationSize, numberOfCities); // Creates population
