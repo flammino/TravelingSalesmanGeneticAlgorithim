@@ -8,7 +8,6 @@
 
 struct City
 {
-private:
 	int x;
 	int y;
 	int id;
@@ -51,7 +50,6 @@ public:
 // List of cities
 class CityList
 {
-private:
 	std::vector<City> cities; // Holds cities
 public:
 	// Adds city
@@ -76,7 +74,6 @@ public:
 // Holds each tour individual
 class Tour
 {
-private:
 	std::vector<City> tour;
 	double distance = 0;
 	double fitness = 0;
@@ -160,7 +157,6 @@ public:
 // Population of tours
 class Population
 {
-private:
 	std::vector<Tour> tours; // Holds population of tours
 	CityList cl;
 	int size = 0;
@@ -227,7 +223,6 @@ public:
 // Breeds population to increase fitness
 class Genetics
 {
-private:
 	const double mutationRate = .075; // Reccomended to be between .005 and .01
 	const int tournamentSize = 5;
 	bool elitism = true; // If true fittest individual will move to next generation
